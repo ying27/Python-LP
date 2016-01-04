@@ -1,39 +1,17 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
-from unicodedata import normalize
-import unicodedata
+from events import Events
 
-#from events import Events
+from math import radians, cos, sin, asin, sqrt
 
-#d = Events()
-#print str(type(d.getTree()))
+'''
+q = "'horta'"
+w = "('taller',['musica','pintura'])"
 
-def evalEntrada(entrada):
-    ret = []
-    if isinstance(entrada, list):
-        #s'ha de complir alguna d'elles
-        print entrada, "is a list"
+d = Events()
+k = d.getEvents(w)
 
-        for i in entrada:
-            evalEntrada(i)
-
-    elif isinstance(entrada,tuple):
-        #s'ha de complir tot
-        print entrada, "is a tuple"
-
-        for i in entrada:
-            ret = evalEntrada(i)
-
-            print ret
-
-    else:
-        #print entrada, "is a string"
-        return ret.append(entrada)
+for i in k:
+    print i
 
 
-
-def strip_accents(txt, codif='utf-8'):
-
-    return normalize('NFKD', txt.decode(codif)).encode('ASCII','ignore')
-
-print strip_accents('Nadal als Museus: 'Mar de Nadal'')
+'''
