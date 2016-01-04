@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 import unicodedata
 from unicodedata import normalize
+from sets import Set
 import requests
 import xml.etree.ElementTree as ET
+
 
 class Event:
 
@@ -32,6 +34,9 @@ class Event:
     def tostring(self):
         return self.index
 
+    def __str__(self):
+     return self.index
+
 
 class ParseEvents:
     __src = "http://w10.bcn.es/APPS/asiasiacache/peticioXmlAsia?id=199"
@@ -50,7 +55,7 @@ class ParseEvents:
         return Event(nom,lloc,barri,carrer,data,lon,lat)
 
     def __init__(self):
-        self.events = []
+        self.events = Set()
 
         #resp = requests.get(self.__src)
         #msg = resp.content
@@ -59,12 +64,20 @@ class ParseEvents:
         root = tree.getroot()
 
         for act in root.findall('body/resultat/actes/acte'):
-            self.events.append(self.__xml2obj(act))
+            self.events.add(self.__xml2obj(act))
 
-    def test(self,n):
-        for i in self.events:
-            if i.itmatch(n):
-                print i.tostring()
+    def filterEvents(self,n):
+        l = Set(filter(lambda x: x.itmatch(n),self.events))
+        #for i in l:
+        #    print i.tostring()
+        return l
+
+    def showEvents(self, n = None):
+        if n is None:
+            n = self.events
+
+        for k in n:
+            print k.tostring()
 
 
 class Events:
@@ -75,21 +88,23 @@ class Events:
     def __evalEntrada(self,entrada):
         if isinstance(entrada, list):
             #s'ha de complir alguna d'elles
-            print entrada, "is a list"
-            for i in entrada:
-                self.__evalEntrada(i)
+            ret = self.__evalEntrada(entrada[0])
+            for i in entrada[1:]:
+                ret = ret | self.__evalEntrada(i)
+            return ret
 
         elif isinstance(entrada,tuple):
             #s'ha de complir tot
-            print entrada, "is a tuple"
-            #for i in entrada:
-            #    self.__evalEntrada(i)
+            ret = self.__evalEntrada(entrada[0])
+            for i in entrada[1:]:
+                ret = ret & self.__evalEntrada(i)
+            return ret
 
         else:
-            #print entrada, "is a string"
-            return entrada
-
+            ret = self.pe.filterEvents(entrada)
+            return ret
 
     def getEvents(self,entrada):
-        res = eval(entrada)
-        self.__evalEntrada(res)
+        h = self.__evalEntrada(eval(entrada))
+        #self.pe.showEvents(h)
+        return h
