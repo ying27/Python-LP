@@ -1,9 +1,15 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 import unicodedata
+from unicodedata import normalize
 import requests
 import xml.etree.ElementTree as ET
 
 class Event:
+
+    def plain(self,txt):
+        i = txt.encode("utf-8")
+        return normalize('NFKD', i.decode('utf-8')).encode('ASCII','ignore')
 
     def iden(self,i):
         if i is None:
@@ -13,15 +19,18 @@ class Event:
     def __init__(self, nom, lloc, barri, carrer, data,lon,lat):
 
         aux = nom + " " + lloc + " " + barri
-        self.index = aux.lower()
+        self.index = self.plain(aux.lower())
         self.nom = self.iden(nom)
         self.carrer = self.iden(carrer)
         self.data = self.iden(data)
         self.lon = self.iden(lon)
         self.lat = self.iden(lat)
 
+    def itmatch(self,n):
+        return (n in self.index)
+
     def tostring(self):
-        return self.nom
+        return self.index
 
 
 class ParseEvents:
@@ -37,7 +46,7 @@ class ParseEvents:
 
         lat = act.find('lloc_simple/adreca_simple/coordenades/googleMaps').get('lat')
         lon = act.find('lloc_simple/adreca_simple/coordenades/googleMaps').get('lon')
-
+        #print nom
         return Event(nom,lloc,barri,carrer,data,lon,lat)
 
     def __init__(self):
@@ -51,6 +60,12 @@ class ParseEvents:
 
         for act in root.findall('body/resultat/actes/acte'):
             self.events.append(self.__xml2obj(act))
+
+    def test(self,n):
+        for i in self.events:
+            if i.itmatch(n):
+                print i.tostring()
+
 
 class Events:
 

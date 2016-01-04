@@ -1,4 +1,8 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+from unicodedata import normalize
+import unicodedata
+
 #from events import Events
 
 #d = Events()
@@ -25,3 +29,11 @@ def evalEntrada(entrada):
     else:
         #print entrada, "is a string"
         return ret.append(entrada)
+
+
+
+def strip_accents(txt, codif='utf-8'):
+
+    return normalize('NFKD', txt.decode(codif)).encode('ASCII','ignore')
+
+print strip_accents('Nadal als Museus: 'Mar de Nadal'')
