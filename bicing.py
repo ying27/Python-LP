@@ -18,6 +18,9 @@ class Bicingst:
     def __str__(self):
         return self.carrer
 
+    def tostring(self):
+        return self.carrer
+
     def __haversine(self, lon1, lat1, lon2, lat2):
         # convert decimal degrees to radians
         lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -73,11 +76,11 @@ class Bicing:
     def getNearBikes(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat) and x.hasBikes(), self.stations)
         aux.sort(key=lambda tup: tup.getDist(lon,lat))
-        for i in aux[:5]: print i
-        return aux
+        #for i in aux[:5]: print i
+        return aux[:5]
 
     def getNearSlots(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat) and x.hasSlots(), self.stations)
         aux.sort(key=lambda tup: tup.getDist(lon,lat))
-        for i in aux[:5]: print i
-        return aux
+        #for i in aux[:5]: print i
+        return aux[:5]

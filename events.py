@@ -32,10 +32,10 @@ class Event:
         return (n in self.index)
 
     def tostring(self):
-        return self.index
+        return self.plain(self.nom)
 
     def __str__(self):
-     return self.index
+     return self.plain(self.nom)
 
 
 class ParseEvents:
