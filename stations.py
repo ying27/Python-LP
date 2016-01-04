@@ -6,16 +6,18 @@ class Station:
 
     dist = 500
 
-    def __init__(self, equipament, lat, lon):
-        self.equipament = equipament
+    def __init__(self, nom, lat, lon, linies, tipus):
+        self.nom = nom
         self.lat = lat
         self.lon = lon
+        self.linies = linies
+        self.type = tipus
 
     def __str__(self):
-        return self.equipament
+        return str(self.linies) + " * " + self.nom
 
     def tostring(self):
-        return self.equipament
+        return str(self.linies) + " * " + self.nom
 
     def __haversine(self, lon1, lat1, lon2, lat2):
         # convert decimal degrees to radians
@@ -44,29 +46,6 @@ class TransportTMB:
     filetrans = 'TRANSPORTS.csv'
     filebus = 'ESTACIONS_BUS.csv'
 
-    def __readFromFile(self,filename):
-        ifile  = open(filename, "rb")
-        return csv.reader(ifile, delimiter=';')
-
-    def __addStation(self, st):
-        sta = Station(st[6], st[4], st[5])
-
-        if 'fgc' in st[6].lower():
-            self.fgc.append(sta)
-
-        elif 'metro' in st[6].lower():
-            self.metro.append(sta)
-
-        elif 'tramvia' in st[6].lower():
-            self.tram.append(sta)
-
-        elif 'Day buses' in st[3]:
-            self.busd.append(sta)
-
-        elif 'Night buses' in st[3]:
-            self.busn.append(sta)
-
-
     def __init__(self):
         self.fgc = []
         self.metro = []
@@ -87,9 +66,62 @@ class TransportTMB:
             self.__addStation(row)
 
 
+    def __readFromFile(self,filename):
+        ifile  = open(filename, "rb")
+        return csv.reader(ifile, delimiter=';')
+
+    def __addStation(self, st):
+
+        if 'fgc' in st[6].lower():
+            self.fgc.append(self.__parseTrans(st,'fgc'))
+
+        elif 'metro' in st[6].lower():
+            self.metro.append(self.__parseTrans(st,'metro'))
+
+        elif 'tramvia' in st[6].lower():
+            self.tram.append(self.__parseTrans(st,'tram'))
+
+        elif 'Day buses' in st[3]:
+            self.busd.append(self.__parseBus(st,'bus dia'))
+
+        elif 'Night buses' in st[3]:
+            self.busn.append(self.__parseBus(st,'bus nit'))
+
+    def __parseTrans(self, st, tipus):
+        infl = st[6]
+        if st[7] != '':
+            infl = infl+','+st[7]
+            if st[8] != '':
+                infl = infl+','+st[8]
+
+        sp = infl.split("-")
+        if '(' in sp[0]:
+            linies = sp[0]
+            linies = linies[linies.index("(") + 1:linies.rindex(")")]
+            linies = linies.split(",")
+        else: linies = [sp[0]]
+
+        return Station(sp[1], st[4], st[5], map(lambda x: x.strip(), linies), tipus)
+
+    def __parseBus(self, st, tipus):
+        infl = st[6]
+        linies = infl.split("-")
+        del linies[-2:]
+        return Station(st[6], st[4], st[5], linies[1:], tipus)
+
     def __getNearestStations(self, aux, lat, lon):
         aux.sort(key=lambda tup: tup.getDist(lon,lat))
-        return aux[:6]
+
+        ret = []
+        linies = []
+
+        for i in range(6):
+            linies = linies + aux[0].linies
+            ret.append(aux[0])
+            aux = filter(lambda x: any(g not in linies for g in x.linies), aux)
+            if len(aux) == 0: break
+        #print linies
+        return ret
 
     def getNearFGC(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat), self.fgc)
