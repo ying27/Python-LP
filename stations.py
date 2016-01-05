@@ -11,13 +11,13 @@ class Station:
         self.lat = lat
         self.lon = lon
         self.linies = linies
-        self.type = tipus
+        self.tipus = tipus
 
     def __str__(self):
-        return str(self.linies) + " * " + self.nom
+        return '['+self.tipus+'] '+str(self.linies)+" * "+ self.nom
 
     def tostring(self):
-        return str(self.linies) + " * " + self.nom
+        return '['+self.tipus+'] '+str(self.linies)+" * "+ self.nom
 
     def __haversine(self, lon1, lat1, lon2, lat2):
         # convert decimal degrees to radians
@@ -46,6 +46,10 @@ class TransportTMB:
     filetrans = 'TRANSPORTS.csv'
     filebus = 'ESTACIONS_BUS.csv'
 
+    def __readFromFile(self,filename):
+        ifile  = open(filename, "rb")
+        return csv.reader(ifile, delimiter=';')
+
     def __init__(self):
         self.fgc = []
         self.metro = []
@@ -65,27 +69,22 @@ class TransportTMB:
         for row in reader:
             self.__addStation(row)
 
-
-    def __readFromFile(self,filename):
-        ifile  = open(filename, "rb")
-        return csv.reader(ifile, delimiter=';')
-
     def __addStation(self, st):
 
         if 'fgc' in st[6].lower():
-            self.fgc.append(self.__parseTrans(st,'fgc'))
+            self.fgc.append(self.__parseTrans(st,'FGC'))
 
         elif 'metro' in st[6].lower():
-            self.metro.append(self.__parseTrans(st,'metro'))
+            self.metro.append(self.__parseTrans(st,'Metro'))
 
         elif 'tramvia' in st[6].lower():
-            self.tram.append(self.__parseTrans(st,'tram'))
+            self.tram.append(self.__parseTrans(st,'Tramvia'))
 
         elif 'Day buses' in st[3]:
-            self.busd.append(self.__parseBus(st,'bus dia'))
+            self.busd.append(self.__parseBus(st,'Bus Diurn'))
 
         elif 'Night buses' in st[3]:
-            self.busn.append(self.__parseBus(st,'bus nit'))
+            self.busn.append(self.__parseBus(st,'Bus Nocturn'))
 
     def __parseTrans(self, st, tipus):
         infl = st[6]
@@ -116,29 +115,57 @@ class TransportTMB:
         linies = []
 
         for i in range(6):
+            if len(aux) == 0: break
             linies = linies + aux[0].linies
             ret.append(aux[0])
             aux = filter(lambda x: any(g not in linies for g in x.linies), aux)
-            if len(aux) == 0: break
         #print linies
+
         return ret
 
-    def getNearFGC(self, lat, lon):
+    def __getNearFGC(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat), self.fgc)
         return self.__getNearestStations(aux, lat, lon)
 
-    def getNearMetro(self, lat, lon):
+    def __getNearMetro(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat), self.metro)
         return self.__getNearestStations(aux, lat, lon)
 
-    def getNearTram(self, lat, lon):
+    def __getNearTram(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat), self.tram)
         return self.__getNearestStations(aux, lat, lon)
 
-    def getNearBusDia(self, lat, lon):
+    def __getNearBusDia(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat), self.busd)
         return self.__getNearestStations(aux, lat, lon)
 
-    def getNearBusNit(self, lat, lon):
+    def __getNearBusNit(self, lat, lon):
         aux = filter(lambda x: x.isNear(lon,lat), self.busn)
         return self.__getNearestStations(aux, lat, lon)
+
+    def getTransports(self, lat, lon):
+        fgc = self.__getNearFGC(lat, lon)
+        metro = self.__getNearMetro(lat,lon)
+        tram = self.__getNearTram(lat,lon)
+        busd = self.__getNearBusDia(lat,lon)
+        busn = self.__getNearBusNit(lat,lon)
+
+        ret = []
+        i = 0
+        while len(ret) < 6:
+            if len(fgc) > i:
+                ret.append(fgc[i])
+            if len(metro) > i:
+                ret.append(metro[i])
+            if len(tram) > i:
+                ret.append(tram[i])
+            if len(busd) > i:
+                ret.append(busd[i])
+            if len(busn) > i:
+                ret.append(busn[i])
+            i = i + 1
+
+        ret = ret[:6]
+        ret.sort(key=lambda tup: tup.getDist(lon,lat))
+
+        return ret
