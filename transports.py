@@ -17,17 +17,16 @@ class Transport:
     def tohtml(self):
         ret = ""
         if self.hasBicing():
-            ret = ret + '<pre>BICING:<br/><b>Bikes:</b><br/>'
+            ret = ret + 'BICING:<br/><b>Bikes:</b><br/>'
             for i in self.bicingBikes:
-                ret = ret + '    ' + i.tohtml() + '<br/>'
+                ret = ret + '&nbsp;&nbsp;&nbsp;&nbsp;' + i.tohtml() + '<br/>'
             ret = ret + '<b>Slots:</b><br/>'
             for i in self.bicingSlots:
-                ret = ret + '    ' + i.tohtml() + '<br/>'
-            ret = ret + '</pre>'
-        else:
+                ret = ret + '&nbsp;&nbsp;&nbsp;&nbsp;' + i.tohtml() + '<br/>'
+        elif self.hasTmb():
             ret = ret + 'TMB:'
             for i in self.tmb:
-                ret = ret + '<br/>   ' + i.tohtml()
+                ret = ret + '<br/>' + i.tohtml()
         return ret
 
     def __str__(self):
@@ -39,7 +38,7 @@ class Transport:
             ret = ret + 'Slots:\n'
             for i in self.bicingSlots:
                 ret = ret + '   ' + i.tostring() + '\n'
-        else:
+        elif self.hasTmb():
             ret = ret + 'TMB:\n'
             for i in self.tmb:
                 ret = ret + '   ' + i.tostring() + '\n'
@@ -60,8 +59,8 @@ class Transports:
                 if i == 'bicing':
                     ret.bicingBikes = self.bicing.getNearBikes(lat, lon)
                     ret.bicingSlots = self.bicing.getNearSlots(lat, lon)
-                    if ret.hasBicing: break
+                    if ret.hasBicing(): break
                 else:
                     ret.tmb = self.tmb.getTransports(lat,lon)
-                    if ret.hasTmb: break
+                    if ret.hasTmb(): break
         return ret

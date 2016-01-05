@@ -67,11 +67,11 @@ class Bicing:
 
     def __init__(self):
         self.stations = []
-        #resp = requests.get(self.__src)
-        #msg = resp.content
-        #tree = ET.fromstring(msg)
-        tree = ET.parse('bicing.php')
-        root = tree.getroot()
+        resp = requests.get(self.__src)
+        msg = resp.content
+        root = ET.fromstring(msg)
+        #tree = ET.parse('bicing.php')
+        #root = tree.getroot()
 
         for act in root.findall('station'):
             self.stations.append(self.__xml2obj(act))

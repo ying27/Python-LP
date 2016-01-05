@@ -137,7 +137,6 @@ class TransportTMB:
             linies = linies + aux[0].linies
             ret.append(aux[0])
             aux = filter(lambda x: any(g not in linies for g in x.linies), aux)
-        #print linies
 
         return ret
 
@@ -170,7 +169,7 @@ class TransportTMB:
 
         ret = []
         i = 0
-        while len(ret) < 6:
+        while len(ret) < 6 and i < 6:
             if len(fgc) > i:
                 ret.append(fgc[i])
             if len(metro) > i:
@@ -181,6 +180,7 @@ class TransportTMB:
                 ret.append(busd[i])
             if len(busn) > i:
                 ret.append(busn[i])
+
             i = i + 1
 
         ret = ret[:6]

@@ -60,14 +60,17 @@ class ParseEvents:
     def __init__(self):
         self.events = Set()
 
-        #resp = requests.get(self.__src)
-        #msg = resp.content
-        #tree = ET.fromstring(msg)
-        tree = ET.parse('bcn.xml')
-        root = tree.getroot()
+        resp = requests.get(self.__src)
+        msg = resp.content
+        root = ET.fromstring(msg)
+        #tree = ET.parse('bcn.xml')
+        #root = tree.getroot()
 
         for act in root.findall('body/resultat/actes/acte'):
-            self.events.add(self.__xml2obj(act))
+            lat = act.find('lloc_simple/adreca_simple/coordenades/googleMaps').get('lat')
+            lon = act.find('lloc_simple/adreca_simple/coordenades/googleMaps').get('lon')
+            if lat != ' ' and lon != ' ':
+                self.events.add(self.__xml2obj(act))
 
     def filterEvents(self,n):
         l = Set(filter(lambda x: x.itmatch(n),self.events))
