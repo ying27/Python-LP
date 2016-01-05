@@ -14,11 +14,21 @@ class Transport:
     def hasTmb(self):
         return len(self.tmb) != 0
 
-    def __tostring(self,n):
-        aux = str()
-        for i in n:
-            aux = aux + i.tostring() + '\n'
-        return aux
+    def tohtml(self):
+        ret = ""
+        if self.hasBicing():
+            ret = ret + '<pre>BICING:<br/><b>Bikes:</b><br/>'
+            for i in self.bicingBikes:
+                ret = ret + '    ' + i.tohtml() + '<br/>'
+            ret = ret + '<b>Slots:</b><br/>'
+            for i in self.bicingSlots:
+                ret = ret + '    ' + i.tohtml() + '<br/>'
+            ret = ret + '</pre>'
+        else:
+            ret = ret + 'TMB:'
+            for i in self.tmb:
+                ret = ret + '<br/>   ' + i.tohtml()
+        return ret
 
     def __str__(self):
         ret = ""

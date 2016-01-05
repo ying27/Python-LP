@@ -14,10 +14,28 @@ class Station:
         self.tipus = tipus
 
     def __str__(self):
-        return '['+self.tipus+'] '+str(self.linies)+" * "+ self.nom
+        aux = self.linies
+        ret = '[' + aux[0]
+        for i in aux[1:]:
+            ret = ret + ',' + str(i)
+        ret = ret + ']'
+        return '['+self.tipus+']'+ret+" "+ self.nom + '     ['+self.lat+', '+self.lon+']'
 
     def tostring(self):
-        return '['+self.tipus+'] '+str(self.linies)+" * "+ self.nom
+        aux = self.linies
+        ret = '[' + aux[0]
+        for i in aux[1:]:
+            ret = ret + ',' + str(i)
+        ret = ret + ']'
+        return '['+self.tipus+']'+ret+" "+ self.nom #+ '     ['+self.lat+', '+self.lon+']'
+
+    def tohtml(self):
+        aux = self.linies
+        ret = '[<b>' + aux[0]
+        for i in aux[1:]:
+            ret = ret + ',' + str(i)
+        ret = ret + '</b>]'
+        return '[<b>'+self.tipus+'</b>]'+ret+" "+ self.nom
 
     def __haversine(self, lon1, lat1, lon2, lat2):
         # convert decimal degrees to radians
@@ -100,13 +118,13 @@ class TransportTMB:
             linies = linies.split(",")
         else: linies = [sp[0]]
 
-        return Station(sp[1], st[4], st[5], map(lambda x: x.strip(), linies), tipus)
+        return Station(sp[1].strip(), st[4], st[5], map(lambda x: x.strip(), linies), tipus)
 
     def __parseBus(self, st, tipus):
         infl = st[6]
         linies = infl.split("-")
         del linies[-2:]
-        return Station(st[6], st[4], st[5], linies[1:], tipus)
+        return Station('BUS', st[4], st[5], linies[1:], tipus)
 
     def __getNearestStations(self, aux, lat, lon):
         aux.sort(key=lambda tup: tup.getDist(lon,lat))

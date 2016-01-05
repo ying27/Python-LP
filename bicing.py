@@ -16,10 +16,14 @@ class Bicingst:
         self.bikes = bikes
 
     def __str__(self):
-        return self.carrer
+        return self.carrer #+ '  ['+self.lat+', '+self.lon+']'
 
     def tostring(self):
+        return self.carrer + '  ['+self.lat+', '+self.lon+']'
+
+    def tohtml(self):
         return self.carrer
+
 
     def __haversine(self, lon1, lat1, lon2, lat2):
         # convert decimal degrees to radians

@@ -31,11 +31,15 @@ class Event:
     def itmatch(self,n):
         return (n in self.index)
 
-    def tostring(self):
-        return self.plain(self.nom)
+    def tohtml(self):
+        ret = '<b>Event:</b><br/>'
+        ret = ret + self.plain(self.nom)
+        ret = ret + '<br/><b>Carrer: </b>' + self.carrer
+        ret = ret + '<br/><b>Data: </b>' +  self.data
+        return ret
 
     def __str__(self):
-     return self.plain(self.nom)
+        return self.plain(self.nom) + '\n['+self.lat+', '+self.lon+']'
 
 
 class ParseEvents:
@@ -43,9 +47,8 @@ class ParseEvents:
 
     def __xml2obj(self, act):
         nom = act.find('nom').text
-        carrer = act.find('lloc_simple/adreca_simple/carrer').text
+        carrer = str(act.find('lloc_simple/adreca_simple/carrer').text) + ', ' + str(act.find('lloc_simple/adreca_simple/numero').text)
         data = act.find('data/data_proper_acte').text
-
         lloc = act.find('lloc_simple/nom').text
         barri = act.find('lloc_simple/adreca_simple/barri').text
 
@@ -69,7 +72,7 @@ class ParseEvents:
     def filterEvents(self,n):
         l = Set(filter(lambda x: x.itmatch(n),self.events))
         #for i in l:
-        #    print i.tostring()
+        #    print i
         return l
 
     def showEvents(self, n = None):
