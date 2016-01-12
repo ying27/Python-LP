@@ -82,3 +82,23 @@ def quickSort(lista):
         l1 = quickSort(filter(lambda x: x < lista[s], lista))
         l2 = quickSort(filter(lambda x: x > lista[s], lista))
         return l1 + [lista[s]] + l2
+
+
+
+######################################################################
+
+def listProd(lista):
+    return reduce(lambda a,b: a*b, lista)
+
+def evenListProd(lista):
+    return listProd(filter(lambda x: x%2 == 0, lista))
+
+def invertList(lista):
+    return reduce(lambda a,b: [b]+a,lista,[])
+
+
+
+def times(n,lista):
+    return map(lambda x: reduce(lambda a,b: a+(b==n),x,0),lista)
+
+#######################################################################
