@@ -158,6 +158,9 @@ class Station:
         for i in aux[1:]:
             ret = ret + ',' + str(i)
         ret = ret + '</b>]'
+        if self.nom == 'BUS':
+            return '[<b>'+self.tipus+'</b>]'+ret+" "+ self.nom + ' ' + '(Lat: '+self.lat+', Lon: '+self.lon+')'
+
         return '[<b>'+self.tipus+'</b>]'+ret+" "+ self.nom
 
     def __haversine(self, lon1, lat1, lon2, lat2):
