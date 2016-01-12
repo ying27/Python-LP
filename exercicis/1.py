@@ -146,3 +146,41 @@ def insertion(f,e,l):
 
 def insertionSort(l):
     return reduce(lambda a,b:insertion(lambda x,y:x<=y,b,a),l,[])
+
+#############################################################################
+
+def mapcl(f,l):
+    return [f(x) for x in l]
+
+def filtercl(f,l):
+    return [x for x in l if f(x)]
+
+def parells(l1,l2):
+    return [(x,y) for x in l1 for y in l2 if x%y == 0]
+
+def factors(n):
+    return [x for x in range(1,n+1) if n%x == 0]
+
+def ternPita(n):
+    l = range(1,n)
+    return [(x,y,z) for x in l for y in l for z in l if x**2+y**2==z**2]
+
+def combinations(l,n):
+    nl = map(lambda x: [x], l)
+    #nl = reduce(lambda a,b: a+[[b]+y for y in nl],l,[])
+    ret = []
+
+    #nl = [[y]+x for x in nl for y in l]
+    while len(nl) != 0:
+        nl = [[y]+x for y in l for x in nl ]
+        ret = ret + [x for x in nl if sum(x) == n]
+        nl = [x for x in nl if sum(x) < n]
+
+    sub = map(mergeSort,ret)
+    ret = []
+
+    for i in sub:
+        if i not in ret:
+            ret.append(i)
+    return ret
+    #return map(lambda x: [[x]+y for y in nl],l)
