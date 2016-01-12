@@ -102,3 +102,47 @@ def times(n,lista):
     return map(lambda x: reduce(lambda a,b: a+(b==n),x,0),lista)
 
 #######################################################################
+
+def zipWith(f,l1,l2):
+    l = zip(l1,l2)
+    return map(lambda (a,b): f(a,b),l)
+
+def takeWhile(f,l):
+    if len(l) == 0 or not f(l[0]):
+        return []
+    else:
+        return [l[0]]+takeWhile(f,l[1:])
+
+def dropWhile(f,l):
+    if len(l) == 0 or not f(l[0]):
+        return l
+    else:
+        return dropWhile(f,l[1:])
+
+def foldl(f,a,b):
+    return reduce(f,b,a)
+
+def foldr(f,b,a):
+    inv = reduce(lambda c,d: [d]+c,a,[])
+    return reduce(f,inv,b)
+
+def scanl(f,a,b):
+    if len(b) == 1:
+        return [f(a,b[0])]
+    else :
+        res = f(a,b[0])
+        return [res]+scanl(f,res,b[1:])
+
+def countIf(f,l):
+    return reduce(lambda a,b: a+(f(b)),l,0)
+
+def insertion(f,e,l):
+    if len(l) == 0:
+        return [e]
+    elif f(e,l[0]):
+        return [e]+l
+    else:
+        return [l[0]]+insertion(f,e,l[1:])
+
+def insertionSort(l):
+    return reduce(lambda a,b:insertion(lambda x,y:x<=y,b,a),l,[])
