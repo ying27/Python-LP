@@ -469,7 +469,7 @@ class Transports:
 
 if len(sys.argv) != 3:
     print 'Error passing arguments'
-    print 'USAGE: pract_python.py "(\'musica\')" "[\'peu\',\'transport\']"'
+    print 'USAGE: python pract_python.py "(\'musica\')" "[\'peu\',\'transport\']"'
 else:
     w = sys.argv[1]
     #e = "['peu','transport','bicing']"
